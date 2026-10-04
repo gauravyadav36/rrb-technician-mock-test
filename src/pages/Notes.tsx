@@ -1,4 +1,7 @@
+import { useState } from 'react';
+import { SAMPLE_NOTES, FORMULA_SHEET } from '../data/questionBank';
 import { renderLatexBlock } from '../utils/format';
+import { generateNotesPdf, makeLatexSourceForNotes, downloadTextFile } from '../utils/latex';
 
 const DEFAULT_OPEN = 'number-system';
 

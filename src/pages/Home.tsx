@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { SUBJECTS } from '../../utils/format';
+import { SUBJECTS } from '../utils/format';
 
 export default function Home() {
   return (
