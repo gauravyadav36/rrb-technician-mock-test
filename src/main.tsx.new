@@ -1,0 +1,20 @@
+import { useEffect } from 'react';
+import { HashRouter } from 'react-router-dom';
+import App from './App';
+import './index.css';
+
+function Main() {
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch(() => undefined);
+    }
+  }, []);
+
+  return (
+    <HashRouter>
+      <App />
+    </HashRouter>
+  );
+}
+
+export default Main;

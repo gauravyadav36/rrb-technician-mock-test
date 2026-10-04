@@ -1,0 +1,3 @@
+[
+  { "id": "science_001", "subject": "General Science", "topic": "Units & Measurements", "difficulty": "easy", "question": "SI unit of force is:", "options": [{"id": "A", "text": "Newton", "isCorrect": true}, {"id": "B", "text": "Joule", "isCorrect": false}, {"id": "C", "text": "Watt", "isCorrect": false}, {"id": "D", "text": "Pascal", "isCorrect": false}], "explanation": "Force is measured in newtons." }
+]

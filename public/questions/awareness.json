@@ -1,0 +1,3 @@
+[
+  { "id": "aware_001", "subject": "General Awareness", "topic": "Current Affairs", "difficulty": "easy", "question": "Which city hosted the 2024 Summer Olympics?", "options": [{"id": "A", "text": "Paris", "isCorrect": true}, {"id": "B", "text": "Rome", "isCorrect": false}, {"id": "C", "text": "Tokyo", "isCorrect": false}, {"id": "D", "text": "Madrid", "isCorrect": false}], "explanation": "The 2024 Summer Olympics were held in Paris." }
+]

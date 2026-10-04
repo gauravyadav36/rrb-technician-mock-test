@@ -1,0 +1,3 @@
+[
+  { "id": "math_001", "subject": "Mathematics", "topic": "Algebra", "difficulty": "medium", "question": "If $x^2 - 5x + 6 = 0$, what are the values of $x$?", "options": [{"id": "A", "text": "2 and 3", "isCorrect": true}, {"id": "B", "text": "-2 and -3", "isCorrect": false}, {"id": "C", "text": "1 and 6", "isCorrect": false}, {"id": "D", "text": "-1 and -6", "isCorrect": false}], "explanation": "Factorising: $(x-2)(x-3)=0$, so $x=2$ or $x=3$." }
+]
