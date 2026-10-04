@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { QUESTION_BANK } from '../data/questionBank';
-import { buildExamSet, scoreAttempt, shuffle } from '../utils/randomization';
 import { useQuizContext } from '../context/QuizContext';
 import { formatSubjectLabel, SUBJECTS } from '../utils/format';
-import { generateAnswerKeyPdf, generateQuestionPaperPdf, downloadTextFile, makeLatexSourceForNotes } from '../utils/latex';
+import { generateAnswerKeyPdf, generateQuestionPaperPdf } from '../utils/latex';
 import type { Question } from '../types';
+import { buildExamSet, scoreAttempt } from '../utils/randomization';
 
 const TOTAL_TIME_SECONDS = 90 * 60;
 
@@ -17,38 +17,8 @@ export default function MockTest() {
   const [timeLeft, setTimeLeft] = useState(TOTAL_TIME_SECONDS);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const startNewTest = (nextMode: string) => {
-    const bank = QUESTION_BANK as Record<string, Question[]>;
-    const nextQuestions = nextMode === 'Full Length' ? buildExamSet(nextMode, bank, 100) : buildExamSet(nextMode, bank, 25);
-    setQuestions(nextQuestions);
-    setSelectedAnswers({});
-    setCurrentIndex(0);
-    setTimeLeft(TOTAL_TIME_SECONDS);
-    setIsSubmitted(false);
-    setMode(nextMode);
-  };
-
-  useMemo(() => {
-    const timer = window.setInterval(() => {
-      if (!isSubmitted) {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            window.clearInterval(timer);
-            handleSubmit();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }
-    }, 1000);
-
-    return () => window.clearInterval(timer);
-  }, [isSubmitted]);
-
-  const currentQuestion = questions[currentIndex];
-
-  const handleSubmit = () => {
-    if (isSubmitted) return;
+  const handleSubmit = useCallback(() => {
+    if (isSubmitted || questions.length === 0) return;
     const result = scoreAttempt(questions, selectedAnswers);
     const attempt = {
       id: crypto.randomUUID(),
@@ -62,17 +32,46 @@ export default function MockTest() {
       unattempted: result.unattempted,
       percentage: Number(result.percentage.toFixed(1)),
       sectionBreakdown: {
-        Mathematics: mode === 'Full Length' ? 25 : 0,
-        Reasoning: mode === 'Full Length' ? 25 : 0,
-        GeneralScience: mode === 'Full Length' ? 40 : 0,
-        GeneralAwareness: mode === 'Full Length' ? 10 : 0,
+        Mathematics: mode === 'Mathematics' ? result.correct : 0,
+        Reasoning: mode === 'General Intelligence & Reasoning' ? result.correct : 0,
+        GeneralScience: mode === 'General Science' ? result.correct : 0,
+        GeneralAwareness: mode === 'General Awareness' ? result.correct : 0,
       },
     };
     addAttempt(attempt);
     setIsSubmitted(true);
     generateAnswerKeyPdf(questions);
-  };
+  }, [addAttempt, isSubmitted, mode, questions, selectedAnswers]);
 
+  const startNewTest = useCallback((nextMode: string) => {
+    const bank = QUESTION_BANK as Record<string, Question[]>;
+    const nextQuestions = nextMode === 'Full Length' ? buildExamSet(nextMode, bank, 100) : buildExamSet(nextMode, bank, 25);
+    setQuestions(nextQuestions);
+    setSelectedAnswers({});
+    setCurrentIndex(0);
+    setTimeLeft(TOTAL_TIME_SECONDS);
+    setIsSubmitted(false);
+    setMode(nextMode);
+  }, []);
+
+  useEffect(() => {
+    if (isSubmitted) return;
+
+    const timer = window.setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          window.clearInterval(timer);
+          handleSubmit();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [handleSubmit, isSubmitted]);
+
+  const currentQuestion = questions[currentIndex];
   const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
   const seconds = String(timeLeft % 60).padStart(2, '0');
 
@@ -94,7 +93,7 @@ export default function MockTest() {
             {questions.map((q, idx) => {
               const selected = selectedAnswers[q.id];
               const correct = q.options.find((opt) => opt.isCorrect)?.id ?? 'N/A';
-              const isCorrect = selected && q.options.some((opt) => opt.id === selected && opt.isCorrect);
+              const isCorrect = !!selected && q.options.some((opt) => opt.id === selected && opt.isCorrect);
               return (
                 <div key={q.id} className="rounded-xl border border-slate-700 bg-slate-900/50 p-4">
                   <p className="font-semibold text-white">{idx + 1}. {q.question.replace(/\$|\\/g, '')}</p>
@@ -125,7 +124,7 @@ export default function MockTest() {
             <button
               key={subject}
               onClick={() => startNewTest(subject)}
-              className={`rounded-full border px-4 py-2 text-sm ${mode === subject ? 'border-blue-500 bg-blue-500/10 text-white' : 'border-slate-700 bg-slate-900 text-slate-200'} `}
+              className={`rounded-full border px-4 py-2 text-sm ${mode === subject ? 'border-blue-500 bg-blue-500/10 text-white' : 'border-slate-700 bg-slate-900 text-slate-200'}`}
             >
               {formatSubjectLabel(subject)}
             </button>
@@ -157,9 +156,7 @@ export default function MockTest() {
                   return (
                     <button
                       key={option.id}
-                      onClick={() => {
-                        setSelectedAnswers((prev) => ({ ...prev, [currentQuestion.id]: option.id }));
-                      }}
+                      onClick={() => setSelectedAnswers((prev) => ({ ...prev, [currentQuestion.id]: option.id }))}
                       className={`question-option flex w-full items-center gap-3 rounded-xl border p-4 text-left ${isSelected ? 'border-blue-500 bg-blue-500/10' : 'border-slate-700 bg-slate-950/40'}`}
                     >
                       <span className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-600 text-sm font-semibold">{option.id}</span>

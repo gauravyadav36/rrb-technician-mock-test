@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState } from 'react';
+import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
 import type { AttemptRecord, SubjectName } from '../types';
 
 const DEFAULT_HISTORY: AttemptRecord[] = [];
@@ -13,9 +13,10 @@ type QuizContextValue = {
 
 const QuizContext = createContext<QuizContextValue | undefined>(undefined);
 
-export function QuizProvider({ children }: { children: React.ReactNode }) {
+export function QuizProvider({ children }: { children: ReactNode }) {
   const [history, setHistory] = useState<AttemptRecord[]>(() => {
-    const raw = localStorage.getItem('rrb-tech-history');
+    if (typeof window === 'undefined') return DEFAULT_HISTORY;
+    const raw = window.localStorage.getItem('rrb-tech-history');
     if (!raw) return DEFAULT_HISTORY;
     try {
       return JSON.parse(raw) as AttemptRecord[];
@@ -28,11 +29,20 @@ export function QuizProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<QuizContextValue>(() => ({
     history,
-    setHistory,
-    addAttempt: (attempt) => {
-      const next = [attempt, ...history].slice(0, 30);
+    setHistory: (next) => {
       setHistory(next);
-      localStorage.setItem('rrb-tech-history', JSON.stringify(next));
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('rrb-tech-history', JSON.stringify(next));
+      }
+    },
+    addAttempt: (attempt) => {
+      setHistory((prev) => {
+        const next = [attempt, ...prev].slice(0, 30);
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem('rrb-tech-history', JSON.stringify(next));
+        }
+        return next;
+      });
     },
     selectedSubject,
     setSelectedSubject,

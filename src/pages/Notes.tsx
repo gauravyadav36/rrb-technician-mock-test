@@ -1,11 +1,10 @@
-import { useState } from 'react';
-import { SAMPLE_NOTES, FORMULA_SHEET } from '../data/questionBank';
 import { renderLatexBlock } from '../utils/format';
-import { generateNotesPdf, makeLatexSourceForNotes, downloadTextFile } from '../utils/latex';
+
+const DEFAULT_OPEN = 'number-system';
 
 export default function Notes() {
   const [query, setQuery] = useState('');
-  const [openTopic, setOpenTopic] = useState('number-system');
+  const [openTopic, setOpenTopic] = useState(DEFAULT_OPEN);
 
   const filtered = SAMPLE_NOTES.map((section) => ({
     ...section,
@@ -40,6 +39,10 @@ export default function Notes() {
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="space-y-4">
+          {filtered.length === 0 && (
+            <div className="section-card p-5 text-slate-300">No matching notes found.</div>
+          )}
+
           {filtered.map((section) => (
             <div key={section.subject} className="section-card p-5">
               <h2 className="text-xl font-semibold text-white">{section.subject}</h2>
