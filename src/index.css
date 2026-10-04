@@ -1,0 +1,81 @@
+/* global reset */
+:root {
+  color-scheme: dark;
+  font-family: Inter, system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  background: #020817;
+  color: #e2e8f0;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { min-height: 100%; height: 100%; margin: 0; }
+body {
+  background: linear-gradient(180deg, #020817 0%, #0f172a 30%, #111827 100%);
+}
+
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font: inherit; }
+
+.container {
+  width: min(1200px, calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.section-card {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.25);
+}
+
+.katex-display {
+  overflow-x: auto;
+  padding: 0.5rem 0;
+}
+
+.question-option {
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.question-option:hover {
+  border-color: rgba(59, 130, 246, 0.9);
+  background: rgba(30, 41, 59, 0.7);
+}
+
+.accent-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: white;
+  font-weight: 600;
+  padding: 0.7rem 1.1rem;
+  cursor: pointer;
+}
+
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(15, 23, 42, 0.8);
+  color: #e2e8f0;
+  padding: 0.7rem 1rem;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .container { width: min(100% - 1rem, 1200px); }
+}
